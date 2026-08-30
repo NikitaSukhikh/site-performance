@@ -284,3 +284,65 @@ Only test sites and journeys you are authorized to access. The skill defaults to
 - [Chrome UX Report API](https://developer.chrome.com/docs/crux/api)
 - [PageSpeed Insights API](https://developers.google.com/speed/docs/insights/v5/get-started)
 - [Microsoft Playwright CLI](https://github.com/microsoft/playwright-cli)
+
+## Uninstall
+
+### Installed with npx (any operating system)
+
+#### Claude and Codex
+
+```bash
+npx skills remove web-performance-audit --global --agent claude-code --agent codex --yes
+```
+
+#### Claude only
+
+```bash
+npx skills remove web-performance-audit --global --agent claude-code --yes
+```
+
+#### Codex only
+
+```bash
+npx skills remove web-performance-audit --global --agent codex --yes
+```
+
+### Ordinary installation: Windows (PowerShell)
+
+#### Claude and Codex
+
+```powershell
+@("$HOME\.claude\skills\web-performance-audit", "$HOME\.agents\skills\web-performance-audit") | ForEach-Object { if (Test-Path -LiteralPath $_) { Remove-Item -LiteralPath $_ -Recurse -Force } }
+```
+
+#### Claude only
+
+```powershell
+$target="$HOME\.claude\skills\web-performance-audit"; if (Test-Path -LiteralPath $target) { Remove-Item -LiteralPath $target -Recurse -Force }
+```
+
+#### Codex only
+
+```powershell
+$target="$HOME\.agents\skills\web-performance-audit"; if (Test-Path -LiteralPath $target) { Remove-Item -LiteralPath $target -Recurse -Force }
+```
+
+### Ordinary installation: macOS and Linux
+
+#### Claude and Codex
+
+```bash
+rm -rf -- "${HOME:?}/.claude/skills/web-performance-audit" "${HOME:?}/.agents/skills/web-performance-audit"
+```
+
+#### Claude only
+
+```bash
+rm -rf -- "${HOME:?}/.claude/skills/web-performance-audit"
+```
+
+#### Codex only
+
+```bash
+rm -rf -- "${HOME:?}/.agents/skills/web-performance-audit"
+```
