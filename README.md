@@ -2,6 +2,26 @@
 
 A portable [Agent Skills](https://agentskills.io) package for diagnosing website and user-journey performance with real-user field data, HTTP transport evidence, and browser measurement.
 
+## Quick install
+
+### Windows (PowerShell)
+
+```powershell
+npx skills add NikitaSukhikh/site-performance --skill web-performance-audit --global
+```
+
+### macOS
+
+```bash
+npx skills add NikitaSukhikh/site-performance --skill web-performance-audit --global
+```
+
+### Linux
+
+```bash
+npx skills add NikitaSukhikh/site-performance --skill web-performance-audit --global
+```
+
 The same package is designed to work with:
 
 - OpenAI Codex.
