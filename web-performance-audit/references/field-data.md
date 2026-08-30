@@ -49,11 +49,11 @@ Repeat with `DESKTOP` when it is relevant. A PSI strategy describes the Lighthou
 ## Parse captured responses
 
 ```bash
-python scripts/summarize_field_data.py crux crux-phone.json
-python scripts/summarize_field_data.py psi psi-mobile.json psi-desktop.json
+python "{skill-root}/scripts/summarize_field_data.py" crux crux-phone.json
+python "{skill-root}/scripts/summarize_field_data.py" psi psi-mobile.json psi-desktop.json
 ```
 
-The parser fails visibly on API errors and labels missing optional blocks instead of treating them as zero.
+Replace `{skill-root}` with the absolute directory containing `SKILL.md`; use `python3` where that is the available command. The parser fails visibly on API errors and labels missing optional blocks instead of treating them as zero. If Python is unavailable, reproduce the same missing-versus-zero behavior with the runtime’s JSON tools.
 
 ## Interpretation rules
 

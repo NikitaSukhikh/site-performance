@@ -17,6 +17,16 @@ Field, transport, and browser measurements are complementary:
 
 Do not let execution order decide which result “wins.” Reconcile differences by scope, population, time window, cache state, device, geography, and measurement method.
 
+## Adapt to the runtime
+
+Read [references/runtime-adapters.md](references/runtime-adapters.md) before executing tools when the agent environment or skill root is not already known.
+
+- Discover available HTTP, browser, shell, and Python capabilities; do not assume a product-specific tool name exists.
+- Use equivalent native, MCP, or command-line tools while preserving the measurement semantics in this skill.
+- Resolve every bundled file relative to the directory containing this `SKILL.md`. Do not assume the current working directory is the skill directory.
+- Do not stop an otherwise useful audit because one named tool is unavailable. Run the supported layers, state the coverage gap, and identify the tool or evidence needed to close it.
+- Ask before installing software when installation is outside the user’s requested scope. Prefer existing or pinned local/temporary tooling over global mutable installs.
+
 ## Establish scope
 
 Before measuring, determine or reasonably infer:
@@ -60,7 +70,7 @@ Read [references/field-data.md](references/field-data.md) before querying or int
 4. Treat missing URL- or origin-level data as a coverage limitation, not an error. Continue with transport and browser measurement.
 5. Use field data to establish impact and prioritization. It cannot validate a deployment newer than its rolling window.
 
-Use `scripts/summarize_field_data.py` to parse captured PSI or CrUX JSON without silently assuming optional fields exist.
+Use the bundled `scripts/summarize_field_data.py`, resolved from the skill root, to parse captured PSI or CrUX JSON without silently assuming optional fields exist.
 
 ### 2. Transport behavior
 
@@ -88,17 +98,17 @@ Read [references/browser-measurement.md](references/browser-measurement.md) befo
 7. For INP or interaction latency, perform representative interactions. A page-load trace cannot establish real-user INP.
 8. Use counterfactual blocking only for non-essential resources and clearly record what was blocked. Do not block authentication, consent, payment, security, or other functional dependencies casually.
 
-The reusable observer scripts intentionally report `observed_long_task_blocking_after_fcp_ms`, not TBT:
+If Playwright CLI is already available, the reusable observer scripts can be run with the following pattern. Replace `{skill-root}` with the resolved absolute skill directory. They intentionally report `observed_long_task_blocking_after_fcp_ms`, not TBT:
 
 ```text
 playwright-cli open
-playwright-cli run-code --filename=scripts/playwright_observe.js
+playwright-cli run-code --filename="{skill-root}/scripts/playwright_observe.js"
 playwright-cli goto "https://example.com/"
 playwright-cli run-code "async page => { await page.waitForTimeout(8000); }"
-playwright-cli --raw run-code --filename=scripts/playwright_read.js
+playwright-cli --raw run-code --filename="{skill-root}/scripts/playwright_read.js"
 ```
 
-Adapt commands to the available browser tool and shell rather than assuming GNU utilities are present.
+With another browser tool, reproduce the same observer-before-navigation order and measurement caveats using its native actions. Adapt commands to the available shell rather than assuming GNU utilities are present.
 
 ## Reconcile evidence
 

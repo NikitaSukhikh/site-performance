@@ -4,7 +4,7 @@ Use this reference for Playwright, Chrome DevTools, traces, performance observer
 
 ## Tooling and profile
 
-Prefer an already configured browser or Chrome DevTools integration. If Playwright CLI is available, check its version before use. Prefer a repository-local installation; do not globally install an unpinned latest release. When installation is needed, verify the current upstream package and pin the version used in the audit notes.
+Prefer an already configured browser, Chrome DevTools integration, or browser automation tool. Use its native navigation, interaction, trace, and network-inspection actions. If Playwright CLI is available, check its version before use. Prefer a repository-local installation; do not globally install an unpinned latest release. When installation is needed, verify the current upstream package and pin the version used in the audit notes.
 
 Declare:
 
@@ -19,17 +19,17 @@ Choose the profile from the user’s target audience or an explicitly stated tes
 
 ## Page-load observers
 
-Install observers before navigation:
+Install observers before navigation. For Playwright CLI, replace `{skill-root}` with the resolved absolute directory containing `SKILL.md`:
 
 ```text
 playwright-cli open
-playwright-cli run-code --filename=scripts/playwright_observe.js
+playwright-cli run-code --filename="{skill-root}/scripts/playwright_observe.js"
 playwright-cli goto "https://example.com/"
 playwright-cli run-code "async page => { await page.waitForTimeout(8000); }"
-playwright-cli --raw run-code --filename=scripts/playwright_read.js
+playwright-cli --raw run-code --filename="{skill-root}/scripts/playwright_read.js"
 ```
 
-The scripts collect FCP, the latest observed LCP, CLS excluding shifts after recent input, and long tasks. The long-task value is named `observed_long_task_blocking_after_fcp_ms`; it is not Lighthouse TBT because it has no TTI boundary and depends on when it is read.
+With a different browser tool, reproduce the same observer-before-navigation sequence using its script-evaluation capability. The bundled scripts collect FCP, the latest observed LCP, session-window CLS excluding shifts after recent input, and long tasks. The long-task value is named `observed_long_task_blocking_after_fcp_ms`; it is not Lighthouse TBT because it has no TTI boundary and depends on when it is read.
 
 For a standards-comparable TBT value, use Lighthouse or another conforming implementation and identify the tool/version.
 
