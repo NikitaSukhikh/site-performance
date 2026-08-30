@@ -34,9 +34,11 @@ site-performance/
     |   |-- runtime-adapters.md
     |   `-- transport.md
     `-- scripts/
+        |-- fetch_google_data.py
         |-- playwright_observe.js
         |-- playwright_read.js
         |-- summarize_field_data.py
+        |-- test_fetch_google_data.py
         `-- test_summarize_field_data.py
 ```
 
@@ -79,7 +81,7 @@ The skill can produce a partial audit when some capabilities are unavailable:
 | Internet access | Reach the target and public performance APIs | Yes for live external audits |
 | Phase-aware HTTP client | Redirect, header, cache, DNS/TLS/TTFB checks | Needed for the transport layer |
 | Browser automation or DevTools | Rendering, trace, interaction, and request diagnosis | Needed for the browser layer |
-| Python 3.9+ | Run the bundled PSI/CrUX JSON parser | Optional; another JSON tool may substitute |
+| Python 3.9+ | Run the secret-safe Google API client and PSI/CrUX parser | Recommended for the field/API layer; another secure host tool may substitute |
 | Google API key | Query PSI and CrUX APIs | Needed only for their API-backed field/lab data |
 
 Browser tooling may be a native host browser, Chrome DevTools integration, browser MCP server, or Playwright CLI. The skill does not require a particular agent connector.
@@ -114,6 +116,26 @@ $env:PSI_API_KEY = "PASTE_YOUR_KEY_HERE"
 
 Do not commit or print the key. It commonly travels in request query strings and may appear in verbose logs.
 
+Agents do not discover the secret value automatically. The skill tells them the exact variable name, and the host supplies its value. The bundled client reads it internally; agents should not enumerate the environment, open `.env` files, inspect credential stores, or ask users to paste keys into chat.
+
+Example commands contain no key argument:
+
+```bash
+python "web-performance-audit/scripts/fetch_google_data.py" check-key
+
+python "web-performance-audit/scripts/fetch_google_data.py" crux \
+  --origin "https://example.com" \
+  --form-factor PHONE \
+  --output crux-phone.json
+
+python "web-performance-audit/scripts/fetch_google_data.py" psi \
+  --url "https://example.com/" \
+  --strategy MOBILE \
+  --output psi-mobile.json
+```
+
+The client fails safely when `PSI_API_KEY` is absent, redacts it from API payloads and error messages, validates target URLs, limits response size, and refuses to overwrite evidence unless `--force` is supplied.
+
 ## Validate
 
 From the repository root, run the portable Agent Skills validator when `skills-ref` is available:
@@ -126,6 +148,7 @@ Run the bundled parser tests:
 
 ```bash
 python -m unittest discover -s web-performance-audit/scripts -p "test_*.py" -v
+python web-performance-audit/scripts/fetch_google_data.py --help
 python web-performance-audit/scripts/summarize_field_data.py --help
 ```
 

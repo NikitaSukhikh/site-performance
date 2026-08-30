@@ -44,7 +44,7 @@ Measure the complained-about journey. Direct navigation is a baseline, not a sub
 - Do not probe authenticated, private, or destructive journeys unless the user has placed them in scope and suitable test credentials/data are available.
 - Never recommend shared caching for HTML until you have ruled out user-specific, authorization-specific, consent-specific, locale-specific, and experiment-specific content. Incorrect caching can expose data.
 - Prefer existing browser tooling. Do not globally install an unpinned `@latest` package. If tooling is missing, use an existing local version or a pinned temporary/local installation when that mutation is within scope.
-- Store API keys in environment variables, avoid printing them, and do not commit captured responses that contain secrets or private URLs.
+- Store API keys in the host environment or secret manager. Do not enumerate the environment, search `.env` files, print secret values, or commit captured responses containing secrets or private URLs.
 
 ## Evidence language
 
@@ -70,7 +70,7 @@ Read [references/field-data.md](references/field-data.md) before querying or int
 4. Treat missing URL- or origin-level data as a coverage limitation, not an error. Continue with transport and browser measurement.
 5. Use field data to establish impact and prioritization. It cannot validate a deployment newer than its rolling window.
 
-Use the bundled `scripts/summarize_field_data.py`, resolved from the skill root, to parse captured PSI or CrUX JSON without silently assuming optional fields exist.
+Use the bundled `scripts/fetch_google_data.py`, resolved from the skill root, for PSI and CrUX requests. It reads only `PSI_API_KEY` from the process environment, keeps the value out of agent-generated arguments, sanitizes responses and errors, and refuses silent overwrites. Then use `scripts/summarize_field_data.py` to parse captured JSON without silently assuming optional fields exist.
 
 ### 2. Transport behavior
 
