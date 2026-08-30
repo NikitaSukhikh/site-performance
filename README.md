@@ -2,7 +2,7 @@
 
 A portable [Agent Skills](https://agentskills.io) package for diagnosing website and user-journey performance with real-user field data, HTTP transport evidence, and browser measurement.
 
-## Quick install
+## Quick install (with npx)
 
 ### Windows (PowerShell)
 
@@ -20,6 +20,28 @@ npx skills add NikitaSukhikh/site-performance --skill web-performance-audit --gl
 
 ```bash
 npx skills add NikitaSukhikh/site-performance --skill web-performance-audit --global
+```
+
+## Ordinary (no npx) installation
+
+Download the skill directly from GitHub without requiring Node.js or `npx`.
+
+### Windows (PowerShell)
+
+```powershell
+$dest="$HOME\.agents\skills\web-performance-audit"; New-Item -ItemType Directory -Force $dest | Out-Null; $archive="$env:TEMP\web-performance-audit.tar.gz"; curl.exe -fsSL "https://github.com/NikitaSukhikh/site-performance/archive/refs/heads/main.tar.gz" -o $archive; tar.exe -xzf $archive --strip-components=2 -C $dest "site-performance-main/web-performance-audit"; Remove-Item $archive
+```
+
+### macOS
+
+```bash
+dest="$HOME/.agents/skills/web-performance-audit"; mkdir -p "$dest" && curl -fsSL "https://github.com/NikitaSukhikh/site-performance/archive/refs/heads/main.tar.gz" | tar -xz --strip-components=2 -C "$dest" site-performance-main/web-performance-audit
+```
+
+### Linux
+
+```bash
+dest="$HOME/.agents/skills/web-performance-audit"; mkdir -p "$dest" && curl -fsSL "https://github.com/NikitaSukhikh/site-performance/archive/refs/heads/main.tar.gz" | tar -xz --strip-components=2 -C "$dest" site-performance-main/web-performance-audit
 ```
 
 The same package is designed to work with:
