@@ -44,7 +44,7 @@ class GoogleFetchTests(unittest.TestCase):
                     ["crux", "--origin", "https://example.com/", "--output", str(output)]
                 )
             self.assertEqual(result, 2)
-            self.assertIn("PSI_CRUX_API_KEY is not available", stderr.getvalue())
+            self.assertIn("CRUX_API_KEY is not available", stderr.getvalue())
             self.assertIn("Direct CrUX queries require", stderr.getvalue())
             self.assertFalse(output.exists())
 

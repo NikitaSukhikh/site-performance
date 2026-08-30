@@ -95,13 +95,13 @@ The skill works immediately without a key: PageSpeed Insights runs anonymously, 
 macOS, Linux, or Git Bash (input is hidden):
 
 ```bash
-printf "Google API key: "; read -rs PSI_CRUX_API_KEY; printf "\n"; export PSI_CRUX_API_KEY
+printf "Google API key: "; read -rs CRUX_API_KEY; printf "\n"; export CRUX_API_KEY
 ```
 
 Windows PowerShell (input is hidden):
 
 ```powershell
-$secureKey = Read-Host "Google API key" -AsSecureString; $env:PSI_CRUX_API_KEY = [System.Net.NetworkCredential]::new("", $secureKey).Password; Remove-Variable secureKey
+$secureKey = Read-Host "Google API key" -AsSecureString; $env:CRUX_API_KEY = [System.Net.NetworkCredential]::new("", $secureKey).Password; Remove-Variable secureKey
 ```
 
 Start `codex` or `claude` from that same terminal after setting the variable. An already-running agent cannot inherit a variable added later. For a desktop or hosted agent, use that host’s secret/environment settings and relaunch it.
@@ -209,13 +209,13 @@ Set it in the environment that launches the agent:
 macOS, Linux, or Git Bash (input is hidden):
 
 ```bash
-printf "Google API key: "; read -rs PSI_CRUX_API_KEY; printf "\n"; export PSI_CRUX_API_KEY
+printf "Google API key: "; read -rs CRUX_API_KEY; printf "\n"; export CRUX_API_KEY
 ```
 
 PowerShell (input is hidden):
 
 ```powershell
-$secureKey = Read-Host "Google API key" -AsSecureString; $env:PSI_CRUX_API_KEY = [System.Net.NetworkCredential]::new("", $secureKey).Password; Remove-Variable secureKey
+$secureKey = Read-Host "Google API key" -AsSecureString; $env:CRUX_API_KEY = [System.Net.NetworkCredential]::new("", $secureKey).Password; Remove-Variable secureKey
 ```
 
 Start `codex` or `claude` from the same terminal after setting the variable. Do not commit or print the key. It commonly travels in request query strings and may appear in verbose logs.
@@ -238,7 +238,7 @@ python "web-performance-audit/scripts/fetch_google_data.py" psi \
   --output psi-mobile.json
 ```
 
-When `PSI_CRUX_API_KEY` is absent, the client runs PSI anonymously and fails safely only for direct CrUX requests. It redacts a configured key from API payloads and error messages, validates target URLs, limits response size, and refuses to overwrite evidence unless `--force` is supplied.
+When `CRUX_API_KEY` is absent, the client runs PSI anonymously and fails safely only for direct CrUX requests. It redacts a configured key from API payloads and error messages, validates target URLs, limits response size, and refuses to overwrite evidence unless `--force` is supplied.
 
 ## Validate
 
