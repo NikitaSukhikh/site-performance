@@ -8,13 +8,31 @@ Use the CrUX API as the primary source for real-user metrics. PSI is useful for 
 
 The CrUX `QueryRequest` supports one `origin` or `url`, optional `formFactor`, optional `metrics`, and an optional effective-connection-type dimension where supported. It does not return country segmentation or device traffic shares. Use the CrUX BigQuery country datasets when country analysis is genuinely required and available.
 
-## Authentication and discovery
+## Authentication and setup
 
-The secret contract is one exact environment variable: `PSI_CRUX_API_KEY`. The host, operator, or secret manager must inject it into the process that runs the agent. The skill does not discover secret values from frontmatter, the filesystem, or the user’s local machine.
+PageSpeed Insights can run without an API key. Direct CrUX and CrUX History API queries require a Google Cloud API key enabled for the Chrome UX Report API. When a key is available, the secret contract is one exact environment variable: `PSI_CRUX_API_KEY`. The host, operator, or secret manager must inject it into the process that launches the agent. The skill does not discover secret values from frontmatter, the filesystem, or the user’s local machine.
 
-Use the bundled client for API calls. It reads `PSI_CRUX_API_KEY` internally, so the agent’s command contains neither the variable name as an argument nor its expanded value. It also redacts the key if Google unexpectedly echoes it in a successful or failed response.
+Use the bundled client for API calls. It reads `PSI_CRUX_API_KEY` internally when present, so the agent’s command contains neither the variable name as an argument nor its expanded value. It also redacts the key if Google unexpectedly echoes it in a successful or failed response.
 
-Do not enumerate environment variables, search `.env` files, inspect keychains, or ask the user to paste the key into chat. If the helper reports that `PSI_CRUX_API_KEY` is unavailable, state that the field/API layer is unavailable, explain how to inject the variable into the host runtime, and continue with supported transport and browser work.
+Do not enumerate environment variables, search `.env` files, inspect keychains, or ask the user to paste the key into chat. If a direct CrUX request reports that `PSI_CRUX_API_KEY` is unavailable:
+
+1. State that direct CrUX is unavailable, not that the entire field or PSI layer is unavailable.
+2. Continue with anonymous PSI, transport, and browser work. Treat PSI field blocks as optional because Google may omit them.
+3. Give the user the relevant setup command below and explain that the agent must be launched again from that same terminal so it inherits the variable.
+
+macOS, Linux, or Git Bash (input is hidden):
+
+```bash
+printf "Google API key: "; read -rs PSI_CRUX_API_KEY; printf "\n"; export PSI_CRUX_API_KEY
+```
+
+Windows PowerShell (input is hidden):
+
+```powershell
+$secureKey = Read-Host "Google API key" -AsSecureString; $env:PSI_CRUX_API_KEY = [System.Net.NetworkCredential]::new("", $secureKey).Password; Remove-Variable secureKey
+```
+
+After setting the variable, start `codex` or `claude` from that terminal. For a desktop or hosted agent, use that host’s secret/environment settings and relaunch it. The user can create and enable the required key by following the [official CrUX API key instructions](https://developer.chrome.com/docs/crux/api#crux-api-key).
 
 Do not hardcode quota or billing claims; verify current Google documentation when those details matter.
 
@@ -22,13 +40,13 @@ Do not hardcode quota or billing claims; verify current Google documentation whe
 
 Replace `{skill-root}` with the absolute directory containing `SKILL.md`; use `python3` where that is the available command.
 
-Check availability without printing the value:
+Check whether direct CrUX access is configured without printing the value:
 
 ```bash
 python "{skill-root}/scripts/fetch_google_data.py" check-key
 ```
 
-The command exits successfully only when `PSI_CRUX_API_KEY` is non-empty. It never prints the value.
+The command exits successfully only when `PSI_CRUX_API_KEY` is non-empty. It never prints the value. This check is not a prerequisite for anonymous PSI.
 
 CrUX origin record for phones:
 
@@ -65,6 +83,8 @@ python "{skill-root}/scripts/fetch_google_data.py" psi \
   --category PERFORMANCE \
   --output psi-mobile.json
 ```
+
+PSI runs anonymously when `PSI_CRUX_API_KEY` is absent and automatically uses the key when it is present. Anonymous PSI is suitable for occasional use; if Google rejects or throttles it, configure the key and retry once.
 
 The client validates HTTP(S) targets, rejects credentials embedded in URLs, caps responses at 64 MiB, verifies JSON, writes atomically, and refuses to replace an existing file unless `--force` is explicit. Prefer a new output file for each sample so evidence is preserved.
 

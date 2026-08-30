@@ -88,6 +88,24 @@ dest="$HOME/.claude/skills/web-performance-audit"; mkdir -p "$dest" && curl -fsS
 dest="$HOME/.agents/skills/web-performance-audit"; mkdir -p "$dest" && curl -fsSL "https://github.com/NikitaSukhikh/site-performance/archive/refs/heads/main.tar.gz" | tar -xz --strip-components=2 -C "$dest" site-performance-main/web-performance-audit
 ```
 
+## Optional: enable direct CrUX field data
+
+The skill works immediately without a key: PageSpeed Insights runs anonymously, and the transport and browser layers remain available. Direct CrUX and CrUX History queries require a Google Cloud API key enabled for the Chrome UX Report API. Follow the [official CrUX API key instructions](https://developer.chrome.com/docs/crux/api#crux-api-key), then set the key before launching the agent.
+
+macOS, Linux, or Git Bash (input is hidden):
+
+```bash
+printf "Google API key: "; read -rs PSI_CRUX_API_KEY; printf "\n"; export PSI_CRUX_API_KEY
+```
+
+Windows PowerShell (input is hidden):
+
+```powershell
+$secureKey = Read-Host "Google API key" -AsSecureString; $env:PSI_CRUX_API_KEY = [System.Net.NetworkCredential]::new("", $secureKey).Password; Remove-Variable secureKey
+```
+
+Start `codex` or `claude` from that same terminal after setting the variable. An already-running agent cannot inherit a variable added later. For a desktop or hosted agent, use that host’s secret/environment settings and relaunch it.
+
 The same package is designed to work with:
 
 - OpenAI Codex.
@@ -168,7 +186,7 @@ The skill can produce a partial audit when some capabilities are unavailable:
 | Phase-aware HTTP client | Redirect, header, cache, DNS/TLS/TTFB checks | Needed for the transport layer |
 | Browser automation or DevTools | Rendering, trace, interaction, and request diagnosis | Needed for the browser layer |
 | Python 3.9+ | Run the secret-safe Google API client and PSI/CrUX parser | Recommended for the field/API layer; another secure host tool may substitute |
-| Google API key | Query PSI and CrUX APIs | Needed only for their API-backed field/lab data |
+| Google API key | Query direct CrUX and raise PSI quota | Optional for PSI; required for direct CrUX and CrUX History |
 
 Browser tooling may be a native host browser, Chrome DevTools integration, browser MCP server, or Playwright CLI. The skill does not require a particular agent connector.
 
@@ -184,23 +202,23 @@ If installation is necessary and authorized, follow the current [Microsoft Playw
 
 ## Google API key
 
-For CrUX or PageSpeed Insights API calls, create a standard Google Cloud API key with the Chrome UX Report API and PageSpeed Insights API enabled. Restrict the key where practical and verify current quotas in Google Cloud.
+PageSpeed Insights can run anonymously, but direct CrUX requires a standard Google Cloud API key with the Chrome UX Report API enabled. If the key will also be used for authenticated PSI calls, enable the PageSpeed Insights API. Restrict the key where practical and verify current quotas in Google Cloud.
 
 Set it in the environment that launches the agent:
 
-macOS, Linux, or Git Bash:
+macOS, Linux, or Git Bash (input is hidden):
 
 ```bash
-export PSI_CRUX_API_KEY="PASTE_YOUR_KEY_HERE"
+printf "Google API key: "; read -rs PSI_CRUX_API_KEY; printf "\n"; export PSI_CRUX_API_KEY
 ```
 
-PowerShell:
+PowerShell (input is hidden):
 
 ```powershell
-$env:PSI_CRUX_API_KEY = "PASTE_YOUR_KEY_HERE"
+$secureKey = Read-Host "Google API key" -AsSecureString; $env:PSI_CRUX_API_KEY = [System.Net.NetworkCredential]::new("", $secureKey).Password; Remove-Variable secureKey
 ```
 
-Do not commit or print the key. It commonly travels in request query strings and may appear in verbose logs.
+Start `codex` or `claude` from the same terminal after setting the variable. Do not commit or print the key. It commonly travels in request query strings and may appear in verbose logs.
 
 Agents do not discover the secret value automatically. The skill tells them the exact variable name, and the host supplies its value. The bundled client reads it internally; agents should not enumerate the environment, open `.env` files, inspect credential stores, or ask users to paste keys into chat.
 
@@ -220,7 +238,7 @@ python "web-performance-audit/scripts/fetch_google_data.py" psi \
   --output psi-mobile.json
 ```
 
-The client fails safely when `PSI_CRUX_API_KEY` is absent, redacts it from API payloads and error messages, validates target URLs, limits response size, and refuses to overwrite evidence unless `--force` is supplied.
+When `PSI_CRUX_API_KEY` is absent, the client runs PSI anonymously and fails safely only for direct CrUX requests. It redacts a configured key from API payloads and error messages, validates target URLs, limits response size, and refuses to overwrite evidence unless `--force` is supplied.
 
 ## Validate
 

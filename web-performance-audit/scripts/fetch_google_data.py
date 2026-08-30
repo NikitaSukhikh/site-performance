@@ -1,5 +1,5 @@
 #!/usr/bin/env python3
-"""Fetch PSI or CrUX JSON while keeping the Google API key out of CLI arguments."""
+"""Fetch PSI or CrUX JSON while keeping Google API keys out of CLI arguments."""
 
 from __future__ import annotations
 
@@ -56,8 +56,9 @@ def require_api_key(environ: Mapping[str, str]) -> str:
     key = environ.get(API_KEY_ENV, "").strip()
     if not key:
         raise FetchError(
-            f"{API_KEY_ENV} is not available in this process. Configure it in the "
-            "environment or secret manager that launches the agent; do not paste it into chat."
+            f"{API_KEY_ENV} is not available in this process. Direct CrUX queries require "
+            "a Google Cloud API key enabled for the Chrome UX Report API. Configure it in "
+            "the environment or secret manager that launches the agent; do not paste it into chat."
         )
     return key
 
@@ -79,8 +80,9 @@ def build_psi_request(args: argparse.Namespace, key: str) -> Request:
     params: list[tuple[str, str]] = [
         ("url", validate_target(args.url)),
         ("strategy", args.strategy),
-        ("key", key),
     ]
+    if key:
+        params.append(("key", key))
     for category in args.category or ["PERFORMANCE"]:
         params.append(("category", category))
     if args.locale:
@@ -276,7 +278,9 @@ def run(
     opener: Callable[..., Any] = urlopen,
 ) -> tuple[Path, int]:
     output = validate_output_path(args.output, force=args.force)
-    key = require_api_key(environ)
+    key = environ.get(API_KEY_ENV, "").strip()
+    if args.command != "psi":
+        key = require_api_key(environ)
     request = build_psi_request(args, key) if args.command == "psi" else build_crux_request(args, key)
     payload = fetch_json(request, timeout=args.timeout, key=key, opener=opener)
     size = write_json_atomic(output, payload, force=args.force)

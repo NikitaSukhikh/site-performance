@@ -29,11 +29,11 @@ Do not assume the agent’s current working directory is the installed skill dir
 
 ## Secret contract
 
-Agent Skills frontmatter does not provide a portable secret-binding mechanism. This skill uses one runtime contract instead: the process executing `scripts/fetch_google_data.py` must receive `PSI_CRUX_API_KEY` from its host environment or secret manager.
+Agent Skills frontmatter does not provide a portable secret-binding mechanism. Direct CrUX access uses one runtime contract: the process executing `scripts/fetch_google_data.py` must receive `PSI_CRUX_API_KEY` from its host environment or secret manager. Anonymous PSI does not require the variable.
 
 The agent learns the variable name from this skill; it does not discover the value. It must not enumerate environment variables, read `.env` files, inspect credential stores, or request the value in chat. Invoke the helper normally and let it check the exact variable internally. Hosted agents can use the API layer only when their platform injects the secret into the execution environment.
 
-If `PSI_CRUX_API_KEY` is unavailable, continue with other supported layers and mark Google API field data unavailable. Do not treat a missing secret as permission to search for one.
+If `PSI_CRUX_API_KEY` is unavailable, continue with anonymous PSI and the other supported layers, and mark only direct CrUX unavailable. PSI field blocks are optional and may be absent. Do not treat a missing secret as permission to search for one.
 
 ## Codex
 

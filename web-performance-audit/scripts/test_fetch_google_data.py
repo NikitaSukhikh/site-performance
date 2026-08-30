@@ -35,15 +35,36 @@ class GoogleFetchTests(unittest.TestCase):
         self.assertIn("is available", stdout.getvalue())
         self.assertNotIn(secret, stdout.getvalue())
 
-    def test_missing_key_is_actionable(self):
+    def test_missing_key_is_actionable_for_crux(self):
         with tempfile.TemporaryDirectory() as directory:
-            output = Path(directory) / "psi.json"
+            output = Path(directory) / "crux.json"
             stderr = io.StringIO()
             with patch.dict("os.environ", {}, clear=True), redirect_stderr(stderr):
-                result = fetch.main(["psi", "--url", "https://example.com/", "--output", str(output)])
+                result = fetch.main(
+                    ["crux", "--origin", "https://example.com/", "--output", str(output)]
+                )
             self.assertEqual(result, 2)
             self.assertIn("PSI_CRUX_API_KEY is not available", stderr.getvalue())
+            self.assertIn("Direct CrUX queries require", stderr.getvalue())
             self.assertFalse(output.exists())
+
+    def test_psi_runs_without_key(self):
+        captured = {}
+
+        def opener(request, **_kwargs):
+            captured["url"] = request.full_url
+            return FakeResponse({"id": "https://example.com/", "lighthouseResult": {}})
+
+        with tempfile.TemporaryDirectory() as directory:
+            output = Path(directory) / "psi.json"
+            args = fetch.build_parser().parse_args(
+                ["psi", "--url", "https://example.com/", "--output", str(output)]
+            )
+            path, _size = fetch.run(args, environ={}, opener=opener)
+
+            self.assertEqual(path, output)
+            self.assertTrue(output.exists())
+            self.assertNotIn("key=", captured["url"])
 
     def test_unexpected_failure_suppresses_secret_details(self):
         secret = "google-secret-value"

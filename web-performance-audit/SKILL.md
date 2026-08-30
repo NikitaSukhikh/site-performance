@@ -64,13 +64,13 @@ Use all three layers for a full audit. For a focused question, use only the laye
 
 Read [references/field-data.md](references/field-data.md) before querying or interpreting CrUX or PageSpeed Insights.
 
-1. Query CrUX at URL level when available, then origin level as fallback.
+1. When direct CrUX access is configured, query URL level first and use origin level as fallback. Without a key, run anonymous PSI and clearly label direct CrUX unavailable; do not label the entire field or PSI layer unavailable.
 2. Segment by form factor only when the API has sufficient data. The CrUX API does not provide country segmentation or device traffic shares.
 3. Report the collection period, scope, p75, and histogram distribution. Do not call p75 “typical.”
 4. Treat missing URL- or origin-level data as a coverage limitation, not an error. Continue with transport and browser measurement.
 5. Use field data to establish impact and prioritization. It cannot validate a deployment newer than its rolling window.
 
-Use the bundled `scripts/fetch_google_data.py`, resolved from the skill root, for PSI and CrUX requests. It reads only `PSI_CRUX_API_KEY` from the process environment, keeps the value out of agent-generated arguments, sanitizes responses and errors, and refuses silent overwrites. Then use `scripts/summarize_field_data.py` to parse captured JSON without silently assuming optional fields exist.
+Use the bundled `scripts/fetch_google_data.py`, resolved from the skill root, for PSI and CrUX requests. PSI runs anonymously when `PSI_CRUX_API_KEY` is absent; direct CrUX requires it. The helper reads the key only from the process environment, keeps the value out of agent-generated arguments, sanitizes responses and errors, and refuses silent overwrites. If the user wants direct CrUX but the key is missing, provide the secure platform-specific setup command from `references/field-data.md` and explain that the agent must be relaunched from the configured environment. Then use `scripts/summarize_field_data.py` to parse captured JSON without silently assuming optional fields exist.
 
 ### 2. Transport behavior
 
