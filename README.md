@@ -105,13 +105,13 @@ Set it in the environment that launches the agent:
 macOS, Linux, or Git Bash:
 
 ```bash
-export PSI_API_KEY="PASTE_YOUR_KEY_HERE"
+export PSI_CRUX_API_KEY="PASTE_YOUR_KEY_HERE"
 ```
 
 PowerShell:
 
 ```powershell
-$env:PSI_API_KEY = "PASTE_YOUR_KEY_HERE"
+$env:PSI_CRUX_API_KEY = "PASTE_YOUR_KEY_HERE"
 ```
 
 Do not commit or print the key. It commonly travels in request query strings and may appear in verbose logs.
@@ -134,7 +134,7 @@ python "web-performance-audit/scripts/fetch_google_data.py" psi \
   --output psi-mobile.json
 ```
 
-The client fails safely when `PSI_API_KEY` is absent, redacts it from API payloads and error messages, validates target URLs, limits response size, and refuses to overwrite evidence unless `--force` is supplied.
+The client fails safely when `PSI_CRUX_API_KEY` is absent, redacts it from API payloads and error messages, validates target URLs, limits response size, and refuses to overwrite evidence unless `--force` is supplied.
 
 ## Validate
 

@@ -70,7 +70,7 @@ Read [references/field-data.md](references/field-data.md) before querying or int
 4. Treat missing URL- or origin-level data as a coverage limitation, not an error. Continue with transport and browser measurement.
 5. Use field data to establish impact and prioritization. It cannot validate a deployment newer than its rolling window.
 
-Use the bundled `scripts/fetch_google_data.py`, resolved from the skill root, for PSI and CrUX requests. It reads only `PSI_API_KEY` from the process environment, keeps the value out of agent-generated arguments, sanitizes responses and errors, and refuses silent overwrites. Then use `scripts/summarize_field_data.py` to parse captured JSON without silently assuming optional fields exist.
+Use the bundled `scripts/fetch_google_data.py`, resolved from the skill root, for PSI and CrUX requests. It reads only `PSI_CRUX_API_KEY` from the process environment, keeps the value out of agent-generated arguments, sanitizes responses and errors, and refuses silent overwrites. Then use `scripts/summarize_field_data.py` to parse captured JSON without silently assuming optional fields exist.
 
 ### 2. Transport behavior
 

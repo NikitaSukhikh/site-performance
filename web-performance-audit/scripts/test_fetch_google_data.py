@@ -42,7 +42,7 @@ class GoogleFetchTests(unittest.TestCase):
             with patch.dict("os.environ", {}, clear=True), redirect_stderr(stderr):
                 result = fetch.main(["psi", "--url", "https://example.com/", "--output", str(output)])
             self.assertEqual(result, 2)
-            self.assertIn("PSI_API_KEY is not available", stderr.getvalue())
+            self.assertIn("PSI_CRUX_API_KEY is not available", stderr.getvalue())
             self.assertFalse(output.exists())
 
     def test_unexpected_failure_suppresses_secret_details(self):

@@ -10,11 +10,11 @@ The CrUX `QueryRequest` supports one `origin` or `url`, optional `formFactor`, o
 
 ## Authentication and discovery
 
-The secret contract is one exact environment variable: `PSI_API_KEY`. The host, operator, or secret manager must inject it into the process that runs the agent. The skill does not discover secret values from frontmatter, the filesystem, or the user’s local machine.
+The secret contract is one exact environment variable: `PSI_CRUX_API_KEY`. The host, operator, or secret manager must inject it into the process that runs the agent. The skill does not discover secret values from frontmatter, the filesystem, or the user’s local machine.
 
-Use the bundled client for API calls. It reads `PSI_API_KEY` internally, so the agent’s command contains neither the variable name as an argument nor its expanded value. It also redacts the key if Google unexpectedly echoes it in a successful or failed response.
+Use the bundled client for API calls. It reads `PSI_CRUX_API_KEY` internally, so the agent’s command contains neither the variable name as an argument nor its expanded value. It also redacts the key if Google unexpectedly echoes it in a successful or failed response.
 
-Do not enumerate environment variables, search `.env` files, inspect keychains, or ask the user to paste the key into chat. If the helper reports that `PSI_API_KEY` is unavailable, state that the field/API layer is unavailable, explain how to inject the variable into the host runtime, and continue with supported transport and browser work.
+Do not enumerate environment variables, search `.env` files, inspect keychains, or ask the user to paste the key into chat. If the helper reports that `PSI_CRUX_API_KEY` is unavailable, state that the field/API layer is unavailable, explain how to inject the variable into the host runtime, and continue with supported transport and browser work.
 
 Do not hardcode quota or billing claims; verify current Google documentation when those details matter.
 
@@ -28,7 +28,7 @@ Check availability without printing the value:
 python "{skill-root}/scripts/fetch_google_data.py" check-key
 ```
 
-The command exits successfully only when `PSI_API_KEY` is non-empty. It never prints the value.
+The command exits successfully only when `PSI_CRUX_API_KEY` is non-empty. It never prints the value.
 
 CrUX origin record for phones:
 

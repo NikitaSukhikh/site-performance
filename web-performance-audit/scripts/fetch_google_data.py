@@ -16,7 +16,7 @@ from urllib.parse import urlencode, urlsplit, urlunsplit
 from urllib.request import Request, urlopen
 
 
-API_KEY_ENV = "PSI_API_KEY"
+API_KEY_ENV = "PSI_CRUX_API_KEY"
 MAX_RESPONSE_BYTES = 64 * 1024 * 1024
 ERROR_BODY_BYTES = 64 * 1024
 USER_AGENT = "web-performance-audit-agent-skill/1.0"
